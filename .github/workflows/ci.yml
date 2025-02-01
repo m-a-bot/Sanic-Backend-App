@@ -30,7 +30,7 @@ jobs:
         run: poetry run ruff check app
 
       - name: Ruff format
-        run: poetry run ruff format check app
+        run: poetry run ruff format --check app
 
       - name: Check types with mypy
         run: poetry run mypy app
