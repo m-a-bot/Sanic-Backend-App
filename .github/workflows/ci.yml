@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  pull_request
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        id: setup-python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install and configure Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.8.2
+
+      - name: Install project
+        run: poetry install --no-interaction
+
+      - name: Ruff linting
+        run: poetry run ruff check app
+
+      - name: Ruff format
+        run: poetry run ruff format check app
+
+      - name: Check types with mypy
+        run: poetry run mypy app
