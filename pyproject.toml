@@ -11,18 +11,18 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.12"
 sanic = "^24.12.0"
-pydantic = "^2.10.6"
+pydantic = {extras = ["email"], version = "^2.10.6"}
 pydantic-settings = "^2.7.1"
 sanic-ext = "^23.12.0"
 sqlalchemy = "^2.0.37"
 asyncpg = "^0.30.0"
 alembic = "^1.14.1"
+pyjwt = "^2.10.1"
 
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.9.4"
 mypy = "^1.14.1"
-sqlalchemy-stubs = "^0.4"
 
 [tool.ruff]
 exclude = [
@@ -45,12 +45,12 @@ indent-width = 4
 select = [
     "ALL"
 ]
-ignore = ["D", "COM812"]
+ignore = ["D", "COM812", "FA102", "ANN401"]
 
 [tool.mypy]
 plugins = [
     "pydantic.mypy",
-    "sqlmypy"
+    "sqlalchemy.ext.mypy.plugin"
 ]
 ignore_missing_imports = true
 exclude = ['migrations']
