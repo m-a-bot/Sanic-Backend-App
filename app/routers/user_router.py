@@ -1,3 +1,5 @@
+from typing import Any
+
 import pydantic
 from sanic import Blueprint, HTTPResponse, Request, exceptions, json
 
@@ -26,7 +28,7 @@ async def login_user(request: Request) -> HTTPResponse:
 
 @user_router.get("/about_me")
 @protected(user_type="user")
-async def get_my_info(request: Request, **kwargs) -> HTTPResponse:
+async def get_my_info(request: Request, **kwargs: Any) -> HTTPResponse:  # noqa: ARG001
     user_id = kwargs["user_id"]
 
     async with AsyncSessionLocal() as session:
@@ -37,7 +39,7 @@ async def get_my_info(request: Request, **kwargs) -> HTTPResponse:
 
 @user_router.get("/accounts/balances")
 @protected(user_type="user")
-async def get_my_accounts(request: Request, **kwargs) -> HTTPResponse:
+async def get_my_accounts(request: Request, **kwargs: Any) -> HTTPResponse:  # noqa: ARG001
     user_id = kwargs["user_id"]
 
     async with AsyncSessionLocal() as session:
@@ -48,7 +50,7 @@ async def get_my_accounts(request: Request, **kwargs) -> HTTPResponse:
 
 @user_router.get("/payments")
 @protected(user_type="user")
-async def get_my_payments(request: Request, **kwargs) -> HTTPResponse:
+async def get_my_payments(request: Request, **kwargs: Any) -> HTTPResponse:  # noqa: ARG001
     user_id = kwargs["user_id"]
 
     async with AsyncSessionLocal() as session:

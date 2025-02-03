@@ -3,6 +3,11 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.sync import update
 
+from app.exceptions import (
+    UserNotCreatedError,
+    UserNotDeletedError,
+    UserNotUpdatedError,
+)
 from app.models.accounts import Account
 from app.models.payments import Payment
 from app.models.users import User
@@ -50,7 +55,7 @@ class UserRepository:
             await self._session.commit()
         except IntegrityError as exc:
             await self._session.rollback()
-            raise Exception from exc
+            raise UserNotCreatedError from exc
 
         s_query = select(User).where(User.email == user.email)
         query_result = await self._session.execute(s_query)
@@ -84,8 +89,9 @@ class UserRepository:
         try:
             await self._session.execute(query)
             await self._session.commit()
-        except Exception:
-            ...
+        except IntegrityError as exc:
+            await self._session.rollback()
+            raise UserNotUpdatedError from exc
 
         query = select(User).where(User.user_id == user_id)
         result = await self._session.execute(query)
@@ -99,7 +105,7 @@ class UserRepository:
             await self._session.commit()
         except IntegrityError as exc:
             await self._session.rollback()
-            raise Exception from exc
+            raise UserNotDeletedError from exc
 
     async def get_info(self, user_id: int) -> PublicUserSchema:
         query = select(User).where(User.user_id == user_id)

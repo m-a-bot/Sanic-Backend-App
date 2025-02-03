@@ -1,9 +1,8 @@
 from functools import wraps
-from typing import Any, Literal
+from typing import Any, Callable, Literal
 
 import jwt
 from sanic import Request, exceptions, text
-from typing_extensions import Unpack
 
 from app.schemas.pyd import Payload
 
@@ -27,12 +26,12 @@ def check_token(request: Request, user_type: str) -> int | None:
         return payload.user_id
 
 
-def protected(user_type: Literal["user", "admin"]):
-    def decorator(f: Any):
+def protected(user_type: Literal["user", "admin"]) -> Callable[[Any], Any]:
+    def decorator(f: Any) -> Any:
         @wraps(f)
         async def decorated_function(
-            request: Request, *args: Unpack[Any], **kwargs: Unpack[Any]
-        ):
+            request: Request, *args: Any, **kwargs: Any
+        ) -> Any:
             user_id = check_token(request, user_type)
 
             if user_id:
