@@ -1,10 +1,45 @@
-from typing import Literal
+import uuid
+from typing import Any, Literal
 
-from pydantic import BaseModel, EmailStr, model_validator
+from pydantic import BaseModel, EmailStr, field_validator, model_validator
 from sanic import exceptions
+from sanic.logging.loggers import logger
 from typing_extensions import Self
 
 from app.config import settings
+from app.utils.utils import get_hash
+
+
+class WebhookData(BaseModel):
+    transaction_id: uuid.UUID
+    account_id: int
+    user_id: int
+    amount: float
+    signature: str
+
+    @model_validator(mode="after")
+    def validate_webhook_data(self) -> Self:
+        if self.amount < 0:
+            raise exceptions.BadRequest
+
+        string = (
+            f"{self.account_id}"
+            f"{self.amount}"
+            f"{self.transaction_id}"
+            f"{self.user_id}"
+            f"{settings.SECRET_KEY}"
+        )
+
+        logger.info(string)
+
+        new_signature = get_hash(string)
+
+        logger.info(new_signature)
+
+        if new_signature != self.signature:
+            raise exceptions.BadRequest
+
+        return self
 
 
 class LoginData(BaseModel):
@@ -69,10 +104,17 @@ class AccountSchema(BaseModel):
 
 
 class PaymentSchema(BaseModel):
-    transaction_id: int
+    transaction_id: str
     account_id: int
     amount: float
     user_id: int
+
+    @field_validator("transaction_id", mode="before")
+    @classmethod
+    def convert_uuid_to_str(cls, value: Any) -> Any:
+        if isinstance(value, uuid.UUID):
+            return str(value)
+        return value
 
     class Config:
         from_attributes = True

@@ -10,7 +10,7 @@ from app.schemas.pyd import (
     UserPayments,
 )
 from app.services.token_service import TokenService
-from app.utils.utils import get_hash
+from app.utils.utils import get_hash_password
 
 
 class UserService:
@@ -24,7 +24,7 @@ class UserService:
         if not data:
             raise exceptions.NotFound
 
-        hashed_password = get_hash(password)
+        hashed_password = get_hash_password(password)
 
         if hashed_password != data.password:
             raise exceptions.Forbidden

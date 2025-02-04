@@ -21,7 +21,7 @@ from app.schemas.pyd import (
     UserSchema,
     UserUpdateRequest,
 )
-from app.utils.utils import get_hash
+from app.utils.utils import get_hash_password
 
 
 class AdminRepository:
@@ -37,7 +37,7 @@ class AdminRepository:
     async def create_user(self, user: UserCreateRequest) -> PublicUserSchema:
         insert_values = user.model_dump()
         password = insert_values["password"]
-        insert_values["password"] = get_hash(password)
+        insert_values["password"] = get_hash_password(password)
 
         query = insert(User).values(
             {
@@ -64,7 +64,7 @@ class AdminRepository:
         update_values = user.model_dump()
         password = update_values.get("password")
         if password:
-            update_values["password"] = get_hash(password)
+            update_values["password"] = get_hash_password(password)
 
         query = (
             update(User)
