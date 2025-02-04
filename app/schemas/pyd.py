@@ -114,7 +114,7 @@ class PaymentSchema(BaseModel):
     def convert_uuid_to_str(cls, value: Any) -> Any:
         if isinstance(value, uuid.UUID):
             return str(value)
-        return value
+        raise exceptions.BadRequest
 
     class Config:
         from_attributes = True

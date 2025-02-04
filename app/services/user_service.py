@@ -2,6 +2,7 @@ from sanic import exceptions
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
+from app.exceptions import UserNotFoundError
 from app.repositories.user_repository import UserRepository
 from app.schemas.pyd import (
     Payload,
@@ -41,10 +42,19 @@ class UserService:
         )
 
     async def get_info(self, user_id: int) -> PublicUserSchema:
-        return await self._repository.get_info(user_id)
+        try:
+            return await self._repository.get_info(user_id)
+        except UserNotFoundError as exc:
+            raise exceptions.NotFound from exc
 
     async def get_accounts(self, user_id: int) -> UserAccounts:
-        return await self._repository.get_accounts(user_id)
+        try:
+            return await self._repository.get_accounts(user_id)
+        except UserNotFoundError as exc:
+            raise exceptions.NotFound from exc
 
     async def get_payments(self, user_id: int) -> UserPayments:
-        return await self._repository.get_payments(user_id)
+        try:
+            return await self._repository.get_payments(user_id)
+        except UserNotFoundError as exc:
+            raise exceptions.NotFound from exc

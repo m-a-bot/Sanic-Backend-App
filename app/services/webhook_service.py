@@ -1,5 +1,7 @@
+from sanic import exceptions
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.exceptions import AccountNotCreatedError
 from app.repositories.webhook_repository import WebhookRepository
 from app.schemas.pyd import WebhookData
 
@@ -24,9 +26,15 @@ class WebhookService:
         return await self._repository.check_user_account(user_id, account_id)
 
     async def _create_user_account(self, user_id: int, account_id: int) -> int:
-        return await self._repository.create_account(user_id, account_id)
+        try:
+            return await self._repository.create_account(user_id, account_id)
+        except AccountNotCreatedError as exc:
+            raise exceptions.BadRequest from exc
 
     async def _save_transaction(self, webhook: WebhookData) -> bool:
-        transaction_data = webhook.model_dump()
-        transaction_data.pop("signature")
-        return await self._repository.save_transaction(transaction_data)
+        try:
+            transaction_data = webhook.model_dump()
+            transaction_data.pop("signature")
+            return await self._repository.save_transaction(transaction_data)
+        except AccountNotCreatedError as exc:
+            raise exceptions.BadRequest from exc

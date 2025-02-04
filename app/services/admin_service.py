@@ -4,6 +4,11 @@ from sanic import exceptions
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
+from app.exceptions import (
+    UserNotDeletedError,
+    UserNotFoundError,
+    UserNotUpdatedError,
+)
 from app.repositories.admin_repository import AdminRepository
 from app.schemas.pyd import (
     Payload,
@@ -44,23 +49,40 @@ class AdminService:
         )
 
     async def get_info(self, user_id: int) -> PublicUserSchema:
-        return await self._repository.get_info(user_id)
+        try:
+            return await self._repository.get_info(user_id)
+        except UserNotFoundError as exc:
+            raise exceptions.NotFound from exc
 
     async def create_user(
         self, user_create_request: UserCreateRequest
     ) -> PublicUserSchema:
-        return await self._repository.create_user(user_create_request)
+        try:
+            return await self._repository.create_user(user_create_request)
+        except UserNotFoundError as exc:
+            raise exceptions.NotFound from exc
 
     async def update_user(
         self, user_update_request: UserUpdateRequest, user_id: int
     ) -> PublicUserSchema:
-        return await self._repository.update_user(user_update_request, user_id)
+        try:
+            return await self._repository.update_user(
+                user_update_request, user_id
+            )
+        except UserNotUpdatedError as exc:
+            raise exceptions.BadRequest from exc
 
     async def delete_user(self, user_id: int) -> None:
-        return await self._repository.delete_user(user_id)
+        try:
+            return await self._repository.delete_user(user_id)
+        except UserNotDeletedError as exc:
+            raise exceptions.BadRequest from exc
 
     async def get_users_balances(self, user_id: int) -> UserAccounts:
-        return await self._repository.get_accounts(user_id)
+        try:
+            return await self._repository.get_accounts(user_id)
+        except UserNotFoundError as exc:
+            raise exceptions.NotFound from exc
 
     async def get_users(self) -> list[dict[str, Any]]:
         return await self._repository.get_users()
