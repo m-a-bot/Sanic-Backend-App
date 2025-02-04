@@ -2,6 +2,10 @@ class UserNotCreatedError(Exception):
     pass
 
 
+class AccountNotCreatedError(Exception):
+    pass
+
+
 class UserNotUpdatedError(Exception):
     pass
 

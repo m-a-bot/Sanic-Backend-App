@@ -10,7 +10,7 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 
-from app.utils.utils import get_hash
+from app.utils.utils import get_hash_password
 
 # revision identifiers, used by Alembic.
 revision: str = '3fe0b09f412b'
@@ -51,7 +51,7 @@ def upgrade() -> None:
             "user_id": 1,
             "fullname": "testuser",
             "email": "some@email.com",
-            "password": get_hash(user_password)
+            "password": get_hash_password(user_password)
         }
     ])
     op.bulk_insert(admin_users, [
@@ -59,7 +59,7 @@ def upgrade() -> None:
             "user_id": 1,
             "fullname": "testadmin",
             "email": "admin@email.com",
-            "password": get_hash(admin_user_password)
+            "password": get_hash_password(admin_user_password)
         }
     ])
 

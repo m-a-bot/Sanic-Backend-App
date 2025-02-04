@@ -13,7 +13,7 @@ from app.schemas.pyd import (
     UserUpdateRequest,
 )
 from app.services.token_service import TokenService
-from app.utils.utils import get_hash
+from app.utils.utils import get_hash_password
 
 
 class AdminService:
@@ -27,7 +27,7 @@ class AdminService:
         if not data:
             raise exceptions.NotFound
 
-        hashed_password = get_hash(password)
+        hashed_password = get_hash_password(password)
 
         if hashed_password != data.password:
             raise exceptions.Forbidden
