@@ -37,7 +37,7 @@ async def get_my_info(request: Request, **kwargs: Any) -> HTTPResponse:  # noqa:
         return json(info.model_dump())
 
 
-@user_router.get("/accounts/balances")
+@user_router.get("/accounts")
 @protected(user_type="user")
 async def get_my_accounts(request: Request, **kwargs: Any) -> HTTPResponse:  # noqa: ARG001
     user_id = kwargs["user_id"]
