@@ -11,6 +11,9 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     SECRET_HASH_KEY: str
 
+    MIN_LENGTH_FULLNAME: int = 2
+    MIN_LENGTH_PASSWORD: int = 4
+
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
     )

@@ -1,6 +1,10 @@
 from typing import Literal
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, model_validator
+from sanic import exceptions
+from typing_extensions import Self
+
+from app.config import settings
 
 
 class LoginData(BaseModel):
@@ -19,6 +23,15 @@ class UserCreateRequest(BaseModel):
     email: EmailStr
     fullname: str
     password: str
+
+    @model_validator(mode="after")
+    def check_lengths(self) -> Self:
+        if (
+            len(self.fullname) < settings.MIN_LENGTH_FULLNAME
+            or len(self.password) < settings.MIN_LENGTH_PASSWORD
+        ):
+            raise exceptions.BadRequest
+        return self
 
 
 class UserUpdateRequest(BaseModel):
